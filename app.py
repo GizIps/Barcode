@@ -20,11 +20,11 @@ def crear_app():
             "ISBN": results.find('meta', itemprop="isbn")['content'],
             "Autor": results.find('meta', itemprop="author")['content'],
             "Nombre": results.find('meta', itemprop="name")['content'],
-            "Publicador": results.find('meta', itemprop="publisher")['content']
+            "Publicador": results.find('meta', itemprop="publisher")['content'],
+            "Fecha": results.find('meta', itemprop="datePublished")['content']
         }
 
-        json_libro = json.dumps(libro)
-        return render_template('index.html', codigo_FE = codigo_BE, libro_FE =  json_libro)
+        return json.dumps(libro), 200
     return app
 if __name__ == '__main__':
     app = crear_app()
