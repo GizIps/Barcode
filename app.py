@@ -10,22 +10,35 @@ def crear_app():
     def inicio(ISBN):
         codigo_BE = ISBN
         web = f'https://www.abebooks.com/servlet/SearchResults?ref_=search_f_cms&isbn={codigo_BE}'
-        response = requests.get(web)
-        content = response.content
-        soup = BeautifulSoup(content, "html.parser")
+        try:
+            response = requests.get(web)
+            content = response.content
+            soup = BeautifulSoup(content, "html.parser")
 
-        results = soup.find("li", {"id": "book-1"})
+            results = soup.find("li", {"id": "book-1"})
 
-        libro = {
-            "ISBN": results.find('meta', itemprop="isbn")['content'],
-            "Autor": results.find('meta', itemprop="author")['content'],
-            "Nombre": results.find('meta', itemprop="name")['content'],
-            "Publicador": results.find('meta', itemprop="publisher")['content'],
-            "Fecha": results.find('meta', itemprop="datePublished")['content']
+            libro = {
+                "ISBN": results.find('meta', itemprop="isbn")['content'],
+                "Autor": results.find('meta', itemprop="author")['content'],
+                "Nombre": results.find('meta', itemprop="name")['content'],
+                "Publicador": results.find('meta', itemprop="publisher")['content'],
+                "Fecha": results.find('meta', itemprop="datePublished")['content']
+            }
+
+            return json.dumps(libro), 200
+        except:
+            libro = {
+                "ISBN": "Libro No encontrado, Revise el ISBN"
+            }
+            return json.dumps(libro), 404
+    @app.errorhandler(404)
+    def page_not_found(e):
+        libro={
+            "ISBN":"Libro No encontrado, Revise el ISBN"
         }
-
-        return json.dumps(libro), 200
+        return json.dumps(libro), 404
     return app
+
 if __name__ == '__main__':
     app = crear_app()
     app.run(debug=True)
